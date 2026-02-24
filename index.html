@@ -17,7 +17,8 @@
     <meta name="twitter:description" content="尋找專屬於你的寶可夢以及寶可夢小隊！">
     <meta name="twitter:image" content="https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Pok%C3%A9_Ball_icon.svg/1200px-Pok%C3%A9_Ball_icon.svg.png">
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5630334263789758" crossorigin="anonymous"></script>
-
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+	
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -238,6 +239,40 @@
             border-top: 1px dashed #ddd;
             width: 100%;
         }
+		/* 截圖下載按鈕與動作區塊樣式 */
+        .action-area {
+            width: 100%;
+            display: none; /* 預設隱藏，搜尋後才顯示 */
+            justify-content: center;
+            margin-top: 20px;
+            margin-bottom: 40px;
+        }
+        .download-btn {
+            background-color: #27ae60;
+            color: white;
+            border: none;
+            padding: 15px 35px;
+            font-size: 18px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+            box-shadow: 0 6px 15px rgba(39, 174, 96, 0.3);
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .download-btn:hover {
+            background-color: #219653;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(39, 174, 96, 0.4);
+        }
+        .download-btn:disabled {
+            background-color: #95a5a6;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
     </style>
 </head>
 <body>
@@ -290,7 +325,7 @@
             <div class="showcase" id="result-m2"></div>
         </div>
 
-        <div class="ad-container" style="margin: 10px 0;">
+        <div class="ad-container" style="margin: 10px 0;" data-html2canvas-ignore="true">
             <ins class="adsbygoogle"
                  style="display:block"
                  data-ad-client="ca-pub-5630334263789758"
@@ -304,7 +339,15 @@
             <div id="ui-m3-title" class="section-title">你的專屬生日寶可夢小隊</div>
             <div class="showcase" id="result-m3"></div>
         </div>
+    	<div style="text-align: center; margin-top: 15px; color: #95a5a6; font-size: 13px; font-weight: bold;">
+            🔍 測測你的生日寶可夢：ludology7882.github.io/birthday-pokemon
+        </div>
+    </div> <div id="actionArea" class="action-area">
+        <button id="btn-download" class="download-btn" onclick="startDownloadCountdown()">
+            📸 下載專屬圖鑑分享
+        </button>
     </div>
+	</div>
 
     <script>
         // ==========================================
@@ -319,7 +362,7 @@
                 btnSearch: "找到我的生日寶可夢",
                 btnFb: "我的Facebook",
                 btnYt: "我的YouTube頻道",
-		loadingDb: "資料庫連線中，請稍候...",
+				loadingDb: "資料庫連線中，請稍候...",
                 m1Title: "編號對照 (改良版)",
                 m2Title: "全國圖鑑版(386)",
                 m3Title: "你的專屬生日寶可夢小隊",
@@ -327,7 +370,10 @@
                 descDayOfYear: "一年中的第",
                 descDaySuffix: "天",
                 descSquad: "小隊成員",
-                unknown: "未知名稱"
+                unknown: "未知名稱",
+				btnDownload: "📸 下載專屬圖鑑分享",
+            	btnWait: "⏳ 圖片生成中... 請稍候",
+            	btnProcessing: "📸 正在擷取畫面...",
             },
             en: {
                 title: "Birthday Pokémon Finder",
@@ -345,7 +391,10 @@
                 descDayOfYear: "The",
                 descDaySuffix: "th day of the year",
                 descSquad: "Squad Members",
-                unknown: "Unknown"
+                unknown: "Unknown",
+				btnDownload: "📸 Download Your Squad",
+          		btnWait: "⏳ Generating... Please wait",
+            	btnProcessing: "📸 Capturing...",
             },
             ja: {
                 title: "誕生日ポケモン検索ツール",
@@ -363,7 +412,10 @@
                 descDayOfYear: "1年のうち第",
                 descDaySuffix: "日目",
                 descSquad: "チームメンバー",
-                unknown: "不明"
+                unknown: "不明",
+				btnDownload: "📸 画像を保存してシェア",
+            	btnWait: "⏳ 生成中... お待ちください",
+            	btnProcessing: "📸 キャプチャ中...",
             }
         };
 
@@ -410,6 +462,11 @@
             const loadingEl = document.getElementById('loading');
             if(loadingEl.style.display !== 'none') {
                 loadingEl.textContent = t.loadingDb;
+            }
+			// 更新下載按鈕文字（如果它沒有在倒數計時的話）
+            const btnDownload = document.getElementById('btn-download');
+            if (btnDownload && !btnDownload.disabled) {
+                btnDownload.textContent = t.btnDownload;
             }
         }
 
@@ -512,7 +569,7 @@
 
             return `
                 <div class="pokemon-card">
-                    <img src="${imgUrl}" alt="${primaryName}" onerror="this.src='https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/0.png'">
+                    <img src="${imgUrl}" alt="${primaryName}" crossorigin="anonymous" onerror="this.src='https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/0.png'">
                     <div class="pokemon-name">${primaryName}</div>
                     <div class="pokemon-sub-name">${sub1}</div>
                     <div class="pokemon-sub-name">${sub2}</div>
@@ -577,8 +634,66 @@
             document.getElementById('result-m3').innerHTML = m3Squad.map(dex => getPokemonCardHTML(dex, squadDesc)).join('');
 
             document.getElementById('dashboard').style.display = 'flex';
+			document.getElementById('actionArea').style.display = 'flex';
+        }
+		// ==========================================
+        // 4. 截圖下載與 5 秒倒數邏輯
+        // ==========================================
+        function startDownloadCountdown() {
+            const btn = document.getElementById('btn-download');
+            const t = i18n[currentLang];
+            
+            // 鎖定按鈕，防止重複點擊
+            btn.disabled = true;
+            let count = 5; // 設定 5 秒倒數
+            
+            // 立即顯示倒數文字
+            btn.textContent = `${t.btnWait} ${count}s`;
+            
+            const timer = setInterval(() => {
+                count--;
+                if (count > 0) {
+                    btn.textContent = `${t.btnWait} ${count}s`;
+                } else {
+                    // 倒數結束，開始截圖
+                    clearInterval(timer);
+                    btn.textContent = t.btnProcessing;
+                    executeScreenshot();
+                }
+            }, 1000);
+        }
+
+        function executeScreenshot() {
+            const dashboard = document.getElementById('dashboard');
+            const btn = document.getElementById('btn-download');
+            const t = i18n[currentLang];
+            const m = document.getElementById('monthSelect').value;
+            const d = document.getElementById('daySelect').value;
+            
+            // 呼叫 html2canvas 進行畫面擷取
+            html2canvas(dashboard, {
+                useCORS: true,       // 允許跨域抓取寶可夢圖片
+                scale: 2,            // 提高截圖畫質
+                backgroundColor: "#f4f7f6" // 設定背景色，避免透明黑底
+            }).then(canvas => {
+                // 創造虛擬連結觸發下載
+                const link = document.createElement('a');
+                link.download = `BirthdayPokemon_${m}-${d}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+                
+                // 恢復按鈕原本的狀態
+                btn.disabled = false;
+                btn.textContent = t.btnDownload;
+            }).catch(err => {
+                console.error("截圖發生錯誤:", err);
+                alert("截圖發生意外錯誤，請稍後再試！");
+                btn.disabled = false;
+                btn.textContent = t.btnDownload;
+            });
         }
     </script>
 </body>
 
 </html>
+
