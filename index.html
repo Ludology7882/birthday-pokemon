@@ -273,6 +273,24 @@
             transform: none;
             box-shadow: none;
         }
+	/* 往下捲動提示字條樣式與動畫 */
+        .scroll-hint {
+            background-color: #e8f4fd;
+            color: #2980b9;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: bold;
+            text-align: center;
+            border: 1px solid #bde0fe;
+            margin-bottom: -10px; /* 縮小與下方卡片的間距 */
+            animation: bounce 2s infinite;
+        }
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-8px); }
+            60% { transform: translateY(-4px); }
+        }
     </style>
 </head>
 <body>
@@ -315,6 +333,9 @@
     </div>
 
     <div id="dashboard">
+	<div id="ui-scroll-hint" class="scroll-hint" data-html2canvas-ignore="true">
+            👇 往下捲動查看全部 3 種結果，最底下還可以「截圖分享」喔！
+        </div>
         <div class="method-section method-1">
             <div id="ui-m1-title" class="section-title">編號對照 (改良版)</div>
             <div class="showcase" id="result-m1"></div>
@@ -374,6 +395,7 @@
 				btnDownload: "📸 下載專屬圖鑑分享",
             	btnWait: "⏳ 圖片生成中... 請稍候",
             	btnProcessing: "📸 正在擷取畫面...",
+		scrollHint: "👇 往下捲動查看全部 3 種結果，最底下還可以「截圖分享」喔！",
             },
             en: {
                 title: "Birthday Pokémon Finder",
@@ -395,6 +417,7 @@
 				btnDownload: "📸 Download Your Squad",
           		btnWait: "⏳ Generating... Please wait",
             	btnProcessing: "📸 Capturing...",
+		scrollHint: "👇 Scroll down to see all 3 results and download your squad!",
             },
             ja: {
                 title: "誕生日ポケモン検索ツール",
@@ -416,6 +439,7 @@
 				btnDownload: "📸 画像を保存してシェア",
             	btnWait: "⏳ 生成中... お待ちください",
             	btnProcessing: "📸 キャプチャ中...",
+		scrollHint: "👇 下にスクロールして3つの結果を確認し、画像を保存しよう！",
             }
         };
 
@@ -467,6 +491,11 @@
             const btnDownload = document.getElementById('btn-download');
             if (btnDownload && !btnDownload.disabled) {
                 btnDownload.textContent = t.btnDownload;
+            }
+		// 讓提示字條跟著切換語言
+            const hintEl = document.getElementById('ui-scroll-hint');
+            if (hintEl) {
+                hintEl.textContent = t.scrollHint;
             }
         }
 
@@ -696,4 +725,3 @@
 </body>
 
 </html>
-
