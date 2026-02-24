@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="page-title">生日寶可夢搜尋器</title>
+    <meta property="og:title" content="生日寶可夢搜尋器">
+    <meta property="og:description" content="尋找專屬於你的寶可夢以及寶可夢小隊！｜Made by 息焉遊焉 Ludology">
+    
+    <meta property="og:image" content="https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Pok%C3%A9_Ball_icon.svg/1200px-Pok%C3%A9_Ball_icon.svg.png">
+    
+    <meta property="og:url" content="https://你的帳號.github.io/你的專案名稱/">
+    <meta property="og:type" content="website">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="生日寶可夢搜尋器">
+    <meta name="twitter:description" content="尋找專屬於你的寶可夢以及寶可夢小隊！">
+    <meta name="twitter:image" content="https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Pok%C3%A9_Ball_icon.svg/1200px-Pok%C3%A9_Ball_icon.svg.png">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5630334263789758" crossorigin="anonymous"></script>
+
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px;
+            margin: 0;
+            color: #333;
+            position: relative;
+        }
+        /* 語言切換選單放置在右上角 */
+        .lang-switcher {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 5px 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            background: white;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .header-container {
+            text-align: center;
+            margin-bottom: 20px;
+            margin-top: 20px;
+        }
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+	/* 創作者署名樣式 */
+        .creator-credit {
+            color: #7f8c8d;
+            font-size: 15px;
+            margin-top: -5px; /* 讓署名稍微靠近大標題一點 */
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+        .creator-credit a {
+            color: #e74c3c; /* 使用跟按鈕一樣的紅色，維持視覺一致性 */
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.3s;
+        }
+        .creator-credit a:hover {
+            color: #c0392b;
+            text-decoration: underline;
+        }
+        p.privacy-note {
+            color: #7f8c8d;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+        
+        .input-group {
+            background-color: white;
+            padding: 20px 30px;
+            border-radius: 50px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            display: inline-flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        select.date-select {
+            padding: 10px;
+            font-size: 16px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            outline: none;
+            background-color: white;
+            cursor: pointer;
+        }
+        .date-label {
+            font-size: 16px;
+            font-weight: bold;
+            color: #555;
+            margin: 0 5px;
+        }
+        .search-btn {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            font-size: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+            margin-left: 10px;
+        }
+        .search-btn:hover { background-color: #c0392b; }
+        
+        /* 獨立出來的社群按鈕區塊 */
+        .social-group {
+            margin-top: 15px;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        .social-btn {
+            text-decoration: none;
+            color: white;
+            padding: 10px 20px;
+            font-size: 15px;
+            border-radius: 8px;
+            font-weight: bold;
+            transition: 0.3s;
+            display: inline-flex;
+            align-items: center;
+        }
+        .fb-btn { background-color: #1877F2; }
+        .fb-btn:hover { background-color: #166fe5; }
+        .yt-btn { background-color: #FF0000; }
+        .yt-btn:hover { background-color: #cc0000; }
+
+        .loading {
+            color: #e74c3c;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+        
+        /* 廣告區塊 */
+        .ad-container {
+            width: 100%;
+            max-width: 900px;
+            margin: 10px auto;
+            text-align: center;
+            min-height: 90px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: transparent;
+            overflow: hidden;
+        }
+
+        /* 儀表板與卡片排版 */
+        #dashboard {
+            display: none;
+            width: 100%;
+            max-width: 900px;
+            flex-direction: column;
+            gap: 25px;
+            margin-top: 10px;
+        }
+        .method-section {
+            background-color: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+            border-left: 6px solid #ccc;
+        }
+        .method-1 { border-left-color: #e74c3c; } 
+        .method-2 { border-left-color: #3498db; } 
+        .method-3 { border-left-color: #f39c12; } 
+        .section-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #2c3e50;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+        }
+        .showcase {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .pokemon-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: #fafafa;
+            border: 1px solid #eee;
+            border-radius: 12px;
+            padding: 15px;
+            width: 160px;
+            text-align: center;
+            transition: transform 0.2s;
+        }
+        .pokemon-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+        }
+        .pokemon-card img {
+            width: 120px;
+            height: 120px;
+            object-fit: contain;
+            margin-bottom: 5px;
+        }
+        /* 主語言與副語言動態樣式 */
+        .pokemon-name {
+            font-size: 16px;
+            font-weight: bold;
+            margin-top: 5px;
+            color: #333;
+        }
+        .pokemon-sub-name {
+            font-size: 12px;
+            color: #7f8c8d;
+            margin-top: 3px;
+            font-family: 'Arial', sans-serif;
+            line-height: 1.2;
+        }
+        .dex-number {
+            color: #888;
+            font-size: 13px;
+            margin-top: 10px;
+            padding-top: 8px;
+            border-top: 1px dashed #ddd;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+
+    <select id="langSwitcher" class="lang-switcher" onchange="changeLanguage()">
+        <option value="zh">繁體中文</option>
+        <option value="en">English</option>
+        <option value="ja">日本語</option>
+    </select>
+
+    <div class="header-container">
+        <h1 id="ui-title">生日寶可夢搜尋器</h1>
+	<p class="creator-credit">Made by 息焉遊焉 Ludology</p>
+        <p id="ui-privacy" class="privacy-note">輸入您的生日月份與日期！</p>
+        
+        <div class="input-group">
+            <select id="monthSelect" class="date-select"></select>
+            <span id="ui-month" class="date-label">月</span>
+            
+            <select id="daySelect" class="date-select"></select>
+            <span id="ui-day" class="date-label">日</span>
+            
+            <button id="ui-btn-search" class="search-btn" onclick="searchAllMethods()">找到我的生日寶可夢</button>
+        </div>
+
+        <div class="social-group">
+            <a href="https://www.facebook.com/Ludology186?locale=zh_TW" target="_blank" class="social-btn fb-btn" id="ui-btn-fb">追蹤 Facebook</a>
+            <a href="https://www.youtube.com/@ludology7882" target="_blank" class="social-btn yt-btn" id="ui-btn-yt">訂閱 YouTube</a>
+        </div>
+        
+        <div id="loading" class="loading">資料庫連線中，請稍候...</div>
+    </div>
+
+    <div class="ad-container">
+        <ins class="adsbygoogle"
+             style="display:inline-block;width:728px;height:90px"
+             data-ad-client="ca-pub-5630334263789758"
+             data-ad-slot="5630334263789758"></ins>
+        <script> (adsbygoogle = window.adsbygoogle || []).push({}); </script>
+    </div>
+
+    <div id="dashboard">
+        <div class="method-section method-1">
+            <div id="ui-m1-title" class="section-title">編號對照 (改良版)</div>
+            <div class="showcase" id="result-m1"></div>
+        </div>
+
+        <div class="method-section method-2">
+            <div id="ui-m2-title" class="section-title">全國圖鑑版(386)</div>
+            <div class="showcase" id="result-m2"></div>
+        </div>
+
+        <div class="ad-container" style="margin: 10px 0;">
+            <ins class="adsbygoogle"
+                 style="display:block"
+                 data-ad-client="ca-pub-5630334263789758"
+                 data-ad-slot="5630334263789758"
+                 data-ad-format="auto"
+                 data-full-width-responsive="true"></ins>
+            <script> (adsbygoogle = window.adsbygoogle || []).push({}); </script>
+        </div>
+
+        <div class="method-section method-3">
+            <div id="ui-m3-title" class="section-title">你的專屬生日寶可夢小隊</div>
+            <div class="showcase" id="result-m3"></div>
+        </div>
+    </div>
+
+    <script>
+        // ==========================================
+        // 0. 多國語系字典 (i18n) 與自動偵測邏輯
+        // ==========================================
+        const i18n = {
+            zh: {
+                title: "生日寶可夢搜尋器",
+                privacy: "輸入您的生日月份與日期！",
+                month: "月",
+                day: "日",
+                btnSearch: "找到我的生日寶可夢",
+                btnFb: "我的Facebook",
+                btnYt: "我的YouTube頻道",
+		loadingDb: "資料庫連線中，請稍候...",
+                m1Title: "編號對照 (改良版)",
+                m2Title: "全國圖鑑版(386)",
+                m3Title: "你的專屬生日寶可夢小隊",
+                descMatch: "對應",
+                descDayOfYear: "一年中的第",
+                descDaySuffix: "天",
+                descSquad: "小隊成員",
+                unknown: "未知名稱"
+            },
+            en: {
+                title: "Birthday Pokémon Finder",
+                privacy: "Enter your birth month and day!",
+                month: "Month",
+                day: "Day",
+                btnSearch: "Discover My Birthday Pokémon!",
+                btnFb: "Follow on Facebook",
+                btnYt: "Subscribe on YouTube",
+                loadingDb: "Connecting to database...",
+                m1Title: "Number Mapping (Enhanced Version)",
+                m2Title: "National Pokédex (386 Edition)",
+                m3Title: "Your Personal Birthday Pokémon Squad",
+                descMatch: "Matches",
+                descDayOfYear: "The",
+                descDaySuffix: "th day of the year",
+                descSquad: "Squad Members",
+                unknown: "Unknown"
+            },
+            ja: {
+                title: "誕生日ポケモン検索ツール",
+                privacy: "誕生月と日付を入力してください！",
+                month: "月",
+                day: "日",
+                btnSearch: "誕生日ポケモンを見つける！",
+                btnFb: "私のFacebook",
+                btnYt: "私のYouTubeチャンネル",
+                loadingDb: "データベースに接続中です。しばらくお待ちください...",
+                m1Title: "番号対応表（改良版）",
+                m2Title: "全国図鑑（386匹版）",
+                m3Title: "あなた専用の誕生日ポケモンチーム",
+                descMatch: "対応",
+                descDayOfYear: "1年のうち第",
+                descDaySuffix: "日目",
+                descSquad: "チームメンバー",
+                unknown: "不明"
+            }
+        };
+
+        let currentLang = 'zh'; // 預設語言
+
+        // 偵測瀏覽器預設語言
+        function detectBrowserLanguage() {
+            const browserLang = navigator.language.toLowerCase();
+            if (browserLang.includes('ja')) {
+                currentLang = 'ja';
+            } else if (!browserLang.includes('zh')) {
+                currentLang = 'en'; // 非中文非日文，一律切換至英文以面向全球
+            }
+            document.getElementById('langSwitcher').value = currentLang;
+            updateUIText();
+        }
+
+        // 手動切換語言
+        function changeLanguage() {
+            currentLang = document.getElementById('langSwitcher').value;
+            updateUIText();
+            // 如果已經搜尋過了，切換語言時自動重新繪製卡片
+            if (document.getElementById('dashboard').style.display === 'flex') {
+                searchAllMethods();
+            }
+        }
+
+        // 更新介面文字
+        function updateUIText() {
+            const t = i18n[currentLang];
+            document.getElementById('page-title').textContent = t.title;
+            document.getElementById('ui-title').textContent = t.title;
+            document.getElementById('ui-privacy').textContent = t.privacy;
+            document.getElementById('ui-month').textContent = t.month;
+            document.getElementById('ui-day').textContent = t.day;
+            document.getElementById('ui-btn-search').textContent = t.btnSearch;
+            document.getElementById('ui-btn-fb').textContent = t.btnFb;
+            document.getElementById('ui-btn-yt').textContent = t.btnYt;
+            document.getElementById('ui-m1-title').textContent = t.m1Title;
+            document.getElementById('ui-m2-title').textContent = t.m2Title;
+            document.getElementById('ui-m3-title').textContent = t.m3Title;
+            
+            // 如果還在載入中，也要切換載入文字
+            const loadingEl = document.getElementById('loading');
+            if(loadingEl.style.display !== 'none') {
+                loadingEl.textContent = t.loadingDb;
+            }
+        }
+
+
+        // ==========================================
+        // 1. 初始化下拉選單邏輯
+        // ==========================================
+        const monthSelect = document.getElementById('monthSelect');
+        const daySelect = document.getElementById('daySelect');
+
+        for (let i = 1; i <= 12; i++) {
+            const option = document.createElement('option');
+            option.value = i;
+            option.textContent = i < 10 ? `0${i}` : i;
+            monthSelect.appendChild(option);
+        }
+
+        function updateDays() {
+            const month = parseInt(monthSelect.value);
+            let maxDays = 31;
+            if (month === 2) maxDays = 29; 
+            else if ([4, 6, 9, 11].includes(month)) maxDays = 30;
+
+            const currentDay = parseInt(daySelect.value) || 1;
+            daySelect.innerHTML = ''; 
+            for (let i = 1; i <= maxDays; i++) {
+                const option = document.createElement('option');
+                option.value = i;
+                option.textContent = i < 10 ? `0${i}` : i;
+                daySelect.appendChild(option);
+            }
+            daySelect.value = currentDay > maxDays ? maxDays : currentDay;
+        }
+
+        monthSelect.addEventListener('change', updateDays);
+        updateDays();
+
+
+        // ==========================================
+        // 2. 讀取 Google Sheet 資料庫
+        // ==========================================
+        const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR-TRaO4Mgmcw6QV5bq_ZCCIRzFHnFUUiG1idE8lm8w41EYM-xSUfkjk3OSnpAsvQ/pub?output=csv';
+        const CSV_URL = `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(SHEET_URL)}`;
+        let pokemonDatabase = {}; 
+
+        async function loadDatabase() {
+            try {
+                const response = await fetch(CSV_URL);
+                const csvText = await response.text();
+                const rows = csvText.split(/\r?\n/).slice(1); 
+                let loadedCount = 0;
+                
+                rows.forEach(row => {
+                    // 請依照你實際 Google Sheet 的欄位位置修改索引 (A=0, B=1, C=2, D=3)
+                    const cols = row.split(','); 
+                    if (cols.length >= 2) {
+                        const id = parseInt(cols[0].trim());
+                        if (!isNaN(id)) {
+                            pokemonDatabase[id] = {
+                                zh: cols[1] ? cols[1].trim() : "---",
+                                ja: cols[2] ? cols[2].trim() : "---",
+                                en: cols[3] ? cols[3].trim() : "---"
+                            };
+                            loadedCount++;
+                        }
+                    }
+                });
+
+                if (loadedCount > 0) {
+                    document.getElementById('loading').style.display = 'none';
+                }
+            } catch (error) {
+                console.error("讀取表單失敗：", error);
+                document.getElementById('loading').textContent = "Database Error / 資料庫讀取失敗";
+            }
+        }
+        
+        // 執行語言偵測與資料庫載入
+        detectBrowserLanguage();
+        loadDatabase();
+
+
+        // ==========================================
+        // 3. 核心邏輯與動態卡片生成
+        // ==========================================
+        function getPokemonCardHTML(dexNumber, description) {
+            const fallbackName = i18n[currentLang].unknown;
+            const pokeData = pokemonDatabase[dexNumber] || { zh: fallbackName, ja: fallbackName, en: fallbackName };
+            const imgUrl = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${dexNumber}.png`;
+
+            // 動態決定誰是主語系，誰是副語系
+            let primaryName, sub1, sub2;
+            if (currentLang === 'en') {
+                primaryName = pokeData.en; sub1 = pokeData.ja; sub2 = pokeData.zh;
+            } else if (currentLang === 'ja') {
+                primaryName = pokeData.ja; sub1 = pokeData.en; sub2 = pokeData.zh;
+            } else { // 預設中文
+                primaryName = pokeData.zh; sub1 = pokeData.en; sub2 = pokeData.ja;
+            }
+
+            return `
+                <div class="pokemon-card">
+                    <img src="${imgUrl}" alt="${primaryName}" onerror="this.src='https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/0.png'">
+                    <div class="pokemon-name">${primaryName}</div>
+                    <div class="pokemon-sub-name">${sub1}</div>
+                    <div class="pokemon-sub-name">${sub2}</div>
+                    <div class="dex-number">#${dexNumber}<br>${description}</div>
+                </div>
+            `;
+        }
+
+        // 動態產生對應語言的描述文字
+        function getDescM1(m, d) {
+            const t = i18n[currentLang];
+            if (currentLang === 'en') return `${t.descMatch} ${m}/${d}`;
+            if (currentLang === 'ja') return `${m}月${d}日に${t.descMatch}`;
+            return `${t.descMatch} ${m}月${d}日`;
+        }
+        function getDescM2(days) {
+            const t = i18n[currentLang];
+            return `${t.descDayOfYear} ${days} ${t.descDaySuffix}`;
+        }
+
+        function getMethod1Dex(m, d) {
+            const mmdd = m * 100 + d;
+            if (mmdd <= 1025) return mmdd;
+            if (m === 10 && d >= 26) return mmdd - 894;
+            if (m === 11) return mmdd - 871;
+            if (m === 12) return mmdd - 869;
+            return 1;
+        }
+
+       function getMethod2Dex(m, d) {
+            // 使用數字直接建立日期，完全避開時區轉換的誤差
+            // 注意：JavaScript 的月份比較特別，是從 0 開始算 (0 代表 1月)
+            const target = new Date(2024, m - 1, d);
+            const start = new Date(2024, 0, 1);
+            
+            // 計算毫秒差轉成天數 (使用 Math.round 四捨五入最為精準)
+            const diffDays = Math.round(Math.abs(target - start) / 86400000);
+            
+            return diffDays + 1;
+        }
+
+        function searchAllMethods() {
+            if (Object.keys(pokemonDatabase).length === 0) {
+                alert("Database is loading, please try again in a second!");
+                return;
+            }
+
+            const month = parseInt(monthSelect.value, 10);
+            const day = parseInt(daySelect.value, 10);
+
+            const m1Dex = getMethod1Dex(month, day);
+            const m2Dex = getMethod2Dex(month, day);
+            const m3Squad = [m2Dex];
+            if (m2Dex + 366 <= 1025) m3Squad.push(m2Dex + 366);
+            if (m2Dex + 732 <= 1025) m3Squad.push(m2Dex + 732);
+
+            // 使用動態翻譯的描述
+            document.getElementById('result-m1').innerHTML = getPokemonCardHTML(m1Dex, getDescM1(month, day));
+            document.getElementById('result-m2').innerHTML = getPokemonCardHTML(m2Dex, getDescM2(m2Dex));
+            
+            const squadDesc = i18n[currentLang].descSquad;
+            document.getElementById('result-m3').innerHTML = m3Squad.map(dex => getPokemonCardHTML(dex, squadDesc)).join('');
+
+            document.getElementById('dashboard').style.display = 'flex';
+        }
+    </script>
+</body>
+</html>
