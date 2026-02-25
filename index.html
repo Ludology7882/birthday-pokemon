@@ -546,19 +546,23 @@
                 const rows = csvText.split(/\r?\n/).slice(1); 
                 let loadedCount = 0;
                 
+                // 超強大正則表達式：正確切割 CSV，不會被圖鑑文字裡的逗號誤導
+                const csvRegex = /,(?=(?:(?:[^"]*"){2})*[^"]*$)/;
+
                 rows.forEach(row => {
-                    // 請依照你實際 Google Sheet 的欄位位置修改索引 (A=0, B=1, C=2, D=3)
-                    const cols = row.split(','); 
+                    const cols = row.split(csvRegex).map(col => col.replace(/^"|"$/g, '').trim()); 
+                    
                     if (cols.length >= 2) {
-                        const id = parseInt(cols[0].trim());
+                        const id = parseInt(cols[0]);
                         if (!isNaN(id)) {
+                            // 確保這裡的變數名稱是 descZh, descJa, descEn
                             pokemonDatabase[id] = {
-                                zh: cols[1] ? cols[1].trim() : "---",
-                                ja: cols[2] ? cols[2].trim() : "---",
-                                en: cols[3] ? cols[3].trim() : "---",
-								desc: cols[4] ? cols[4].trim() : "圖鑑資料建置中...",
-								jadesc: cols[5] ? cols[5].trim() : "図鑑データ準備中...",
-								endesc: cols[6] ? cols[6].trim() : "Pokédex entry coming soon...",
+                                zh: cols[1] || "---",
+                                ja: cols[2] || "---",
+                                en: cols[3] || "---",
+                                descZh: cols[4] || "中文圖鑑建置中...",
+                                descJa: cols[5] || "図鑑データ準備中...",
+                                descEn: cols[6] || "Pokédex entry coming soon..."
                             };
                             loadedCount++;
                         }
@@ -582,22 +586,29 @@
         // ==========================================
         // 3. 核心邏輯與動態卡片生成
         // ==========================================
-        function getPokemonCardHTML(dexNumber, description) {
+       function getPokemonCardHTML(dexNumber, description) {
             const fallbackName = i18n[currentLang].unknown;
-            const pokeData = pokemonDatabase[dexNumber] || { zh: fallbackName, ja: fallbackName, en: fallbackName, desc: "未知的寶可夢", jadesc: "未知的寶可夢", endesc: "未知的寶可夢" };
+            // 確保沒有抓到資料時，有預設的佔位符
+            const pokeData = pokemonDatabase[dexNumber] || { 
+                zh: fallbackName, ja: fallbackName, en: fallbackName, 
+                descZh: "未知", descJa: "未知", descEn: "Unknown" 
+            };
             const imgUrl = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${dexNumber}.png`;
 
-            // 動態決定誰是主語系，誰是副語系
-            let primaryName, sub1, sub2;
+            // 根據現在的語言，決定要顯示哪一種語言的圖鑑
+            let primaryName, sub1, sub2, currentDesc;
             if (currentLang === 'en') {
                 primaryName = pokeData.en; sub1 = pokeData.ja; sub2 = pokeData.zh;
+                currentDesc = pokeData.descEn;
             } else if (currentLang === 'ja') {
                 primaryName = pokeData.ja; sub1 = pokeData.en; sub2 = pokeData.zh;
+                currentDesc = pokeData.descJa;
             } else { 
                 primaryName = pokeData.zh; sub1 = pokeData.en; sub2 = pokeData.ja;
-                currentDesc = pokeData.descZh;
+                currentDesc = pokeData.descZh; // 正確對應中文圖鑑
             }
 
+            // 把 currentDesc 放進 HTML 結構中
             return `
                 <div class="pokemon-card">
                     <img src="${imgUrl}" alt="${primaryName}" crossorigin="anonymous" onerror="this.src='https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/0.png'">
@@ -729,6 +740,7 @@
 </body>
 
 </html>
+
 
 
 
