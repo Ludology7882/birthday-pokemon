@@ -734,7 +734,7 @@
 			document.getElementById('actionArea').style.display = 'flex';
         }
 		// ==========================================
-        // 4. 截圖下載與 5 秒倒數邏輯
+        // 4. 截圖下載與秒倒數邏輯
         // ==========================================
         function startDownloadCountdown() {
             const btn = document.getElementById('btn-download');
@@ -742,7 +742,7 @@
             
             // 鎖定按鈕，防止重複點擊
             btn.disabled = true;
-            let count = 5; // 設定 5 秒倒數
+            let count = 1; // 設定 5 秒倒數
             
             // 立即顯示倒數文字
             btn.textContent = `${t.btnWait} ${count}s`;
@@ -768,7 +768,7 @@
             const d = document.getElementById('daySelect').value;
             const fileName = `BirthdayPokemon_${m}-${d}.png`;
             
-            // 偵測是否為 LINE 或 Facebook 的內建瀏覽器
+            // 偵測是否為 LINE、FB、IG 的內建瀏覽器
             const ua = navigator.userAgent || navigator.vendor || window.opera;
             const isInAppBrowser = (ua.indexOf("Line") > -1) || (ua.indexOf("FBAN") > -1) || (ua.indexOf("FBAV") > -1) || (ua.indexOf("Instagram") > -1);
 
@@ -778,22 +778,24 @@
                 backgroundColor: "#f4f7f6"
             }).then(canvas => {
                 
-                // 如果是 LINE / FB 等 App 環境，直接轉成 Base64 圖片並開啟彈窗
+                // 【分支 A】如果是 LINE / FB 環境：彈出圖片請使用者長按
                 if (isInAppBrowser) {
                     const base64Image = canvas.toDataURL("image/png");
                     document.getElementById('preview-image').src = base64Image;
                     document.getElementById('preview-modal').classList.add('active');
                     
+                    // 務必恢復按鈕狀態
                     btn.disabled = false;
                     btn.textContent = t.btnDownload;
-                    return; // 提早結束，不觸發後面的下載或分享機制
+                    return; 
                 }
 
-                // 以下為正常瀏覽器 (Safari/Chrome/電腦) 的處理邏輯
+                // 【分支 B】正常瀏覽器環境：嘗試原生分享或直接下載
                 canvas.toBlob(function(blob) {
                     const file = new File([blob], fileName, { type: 'image/png' });
 
                     if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                        // 支援原生分享 (如 Safari / Chrome 手機版)
                         navigator.share({
                             files: [file],
                             title: '我的專屬生日寶可夢',
@@ -802,11 +804,13 @@
                             btn.disabled = false;
                             btn.textContent = t.btnDownload;
                         }).catch((error) => {
+                            // 使用者取消分享，改為觸發下載
                             triggerTraditionalDownload(blob, fileName);
                             btn.disabled = false;
                             btn.textContent = t.btnDownload;
                         });
                     } else {
+                        // 不支援分享 (如電腦版)，直接觸發下載
                         triggerTraditionalDownload(blob, fileName);
                         btn.disabled = false;
                         btn.textContent = t.btnDownload;
@@ -814,11 +818,22 @@
                 }, 'image/png');
 
             }).catch(err => {
+                // 【錯誤處理】即使發生意外，也要把按鈕救回來
                 console.error("截圖發生錯誤:", err);
                 alert("截圖發生意外錯誤，請稍後再試！");
                 btn.disabled = false;
                 btn.textContent = t.btnDownload;
             });
+        }
+
+        // 獨立的傳統下載函式
+        function triggerTraditionalDownload(blob, fileName) {
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.download = fileName;
+            link.href = url;
+            link.click();
+            URL.revokeObjectURL(url); // 釋放記憶體
         }
     </script>
 	<div id="preview-modal" class="modal-overlay">
@@ -835,6 +850,7 @@
 </body>
 
 </html>
+
 
 
 
