@@ -16,8 +16,7 @@
     <meta name="twitter:title" content="生日寶可夢搜尋器">
     <meta name="twitter:description" content="尋找專屬於你的寶可夢以及寶可夢小隊！">
     <meta name="twitter:image" content="https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Pok%C3%A9_Ball_icon.svg/1200px-Pok%C3%A9_Ball_icon.svg.png">
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-	
+		
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -263,103 +262,7 @@
             margin-top: 20px;
             margin-bottom: 40px;
         }
-        .download-btn {
-            background-color: #27ae60;
-            color: white;
-            border: none;
-            padding: 15px 35px;
-            font-size: 18px;
-            border-radius: 50px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: 0.3s;
-            box-shadow: 0 6px 15px rgba(39, 174, 96, 0.3);
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .download-btn:hover {
-            background-color: #219653;
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(39, 174, 96, 0.4);
-        }
-        .download-btn:disabled {
-            background-color: #95a5a6;
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
-        }
-	/* 往下捲動提示字條樣式與動畫 */
-        .scroll-hint {
-            background-color: #e8f4fd;
-            color: #2980b9;
-            padding: 12px 20px;
-            border-radius: 8px;
-            font-size: 15px;
-            font-weight: bold;
-            text-align: center;
-            border: 1px solid #bde0fe;
-            margin-bottom: -10px; /* 縮小與下方卡片的間距 */
-            animation: bounce 2s infinite;
-        }
-        @keyframes bounce {
-            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
-            40% { transform: translateY(-8px); }
-            60% { transform: translateY(-4px); }
-        }
-		/* 彈窗背景黑幕 */
-        .modal-overlay {
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0, 0, 0, 0.85);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-            visibility: hidden;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-        /* 彈窗顯示時的狀態 */
-        .modal-overlay.active {
-            visibility: visible;
-            opacity: 1;
-        }
-        /* 彈出來的那張圖 */
-        .modal-content {
-            max-width: 85%;
-            max-height: 70vh;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(255,255,255,0.2);
-            object-fit: contain;
-			/* 👇 加上這四行，強制喚醒手機的長按選單 👇 */
-            -webkit-touch-callout: default !important;
-            pointer-events: auto !important;
-            user-select: auto !important;
-            -webkit-user-select: auto !important;
-        }
-        /* 提示文字與關閉按鈕 */
-        .modal-text {
-            color: #fff;
-            font-size: 16px;
-            font-weight: bold;
-            margin-bottom: 15px;
-            text-align: center;
-            background: #e74c3c;
-            padding: 8px 15px;
-            border-radius: 20px;
-        }
-        .modal-close {
-            margin-top: 20px;
-            padding: 10px 30px;
-            background: #555;
-            color: white;
-            border: none;
-            border-radius: 20px;
-            font-size: 16px;
-            cursor: pointer;
-        }
+  
     </style>
 </head>
 <body>
@@ -394,10 +297,7 @@
     </div>
 
     <div id="dashboard">
-	<div id="ui-scroll-hint" class="scroll-hint" data-html2canvas-ignore="true">
-            👇 往下捲動查看全部 3 種結果，最底下還可以「截圖分享」喔！
-        </div>
-        <div class="method-section method-1">
+	    <div class="method-section method-1">
             <div id="ui-m1-title" class="section-title">編號對照 (改良版)</div>
             <div class="showcase" id="result-m1"></div>
         </div>
@@ -415,9 +315,9 @@
             🔍 測測你的生日寶可夢：ludology7882.github.io/birthday-pokemon
         </div>
     </div> <div id="actionArea" class="action-area">
-        <button id="btn-download" class="download-btn" onclick="startDownloadCountdown()">
-            📸 下載專屬圖鑑分享
-        </button>
+        <button id="btn-copy-url" style="background-color: #3498db; color: white; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; margin-left: 10px; font-weight: bold;">
+        🔗 複製我的專屬連結
+    </button>
     </div>
 	</div>
 
@@ -443,10 +343,6 @@
                 descDaySuffix: "天",
                 descSquad: "小隊成員",
                 unknown: "未知名稱",
-				btnDownload: "📸 下載專屬圖鑑分享",
-            	btnWait: "⏳ 圖片生成中... 請稍候",
-            	btnProcessing: "📸 正在擷取畫面...",
-		scrollHint: "👇 往下捲動查看全部 3 種結果，最底下還可以「截圖分享」喔！",
             },
             en: {
                 title: "Birthday Pokémon Finder",
@@ -465,10 +361,6 @@
                 descDaySuffix: "th day of the year",
                 descSquad: "Team Members",
                 unknown: "Unknown",
-				btnDownload: "📸 Download Your Team",
-          		btnWait: "⏳ Generating... Please wait",
-            	btnProcessing: "📸 Capturing...",
-		scrollHint: "👇 Scroll down to see all 3 results and download your team!",
             },
             ja: {
                 title: "誕生日ポケモン検索ツール",
@@ -487,10 +379,6 @@
                 descDaySuffix: "日目",
                 descSquad: "チームメンバー",
                 unknown: "不明",
-				btnDownload: "📸 画像を保存してシェア",
-            	btnWait: "⏳ 生成中... お待ちください",
-            	btnProcessing: "📸 キャプチャ中...",
-		scrollHint: "👇 下にスクロールして3つの結果を確認し、画像を保存しよう！",
             }
         };
 
@@ -629,6 +517,39 @@
                 console.error("讀取表單失敗：", error);
                 document.getElementById('loading').textContent = "Database Error / 資料庫讀取失敗";
             }
+			// 3. 自動讀取網址參數並執行搜尋的函式
+        function checkUrlAndAutoRun() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const m = urlParams.get('m');
+            const d = urlParams.get('d');
+            
+            if (m && d) {
+                // 自動幫使用者把月份和日期的選單填好
+                const monthSelect = document.getElementById('monthSelect');
+                const daySelect = document.getElementById('daySelect');
+                
+                if (monthSelect && daySelect) {
+                    monthSelect.value = m;
+                    daySelect.value = d;
+                    
+                    // 模擬使用者點擊了「搜尋/計算」按鈕
+                    // ⚠️ 這裡的 'btn-search-date' 請替換成你網頁上實際觸發日期搜尋的那顆按鈕的 ID
+                    const searchBtn = document.getElementById('ui-btn-search');
+                    if (searchBtn) {
+                        searchBtn.click();
+                        
+                        // 在畫面最上方加入一個小提示，增加互動感
+                        const hint = document.createElement('div');
+                        hint.innerHTML = `<div style="background:#fff3cd; color:#856404; padding:10px; text-align:center; margin-bottom:15px; border-radius:8px; font-weight:bold;">
+                            👀 這是他的專屬生日寶可夢！你的專屬寶可夢是哪一隻呢？快來測測看！👇
+                        </div>`;
+                        document.getElementById('dashboard').prepend(hint);
+                    }
+                }
+            }
+        }
+        
+        // 記得在 loadDatabase() 的最後面（資料確定載入成功的地方）加上 checkUrlAndAutoRun();
         }
         
         // 執行語言偵測與資料庫載入
@@ -732,127 +653,47 @@
 
             document.getElementById('dashboard').style.display = 'flex';
 			document.getElementById('actionArea').style.display = 'flex';
-        }
-		// ==========================================
-        // 4. 截圖下載與秒倒數邏輯
-        // ==========================================
-        function startDownloadCountdown() {
-            const btn = document.getElementById('btn-download');
-            const t = i18n[currentLang];
-            
-            // 鎖定按鈕，防止重複點擊
-            btn.disabled = true;
-            let count = 1; // 設定 5 秒倒數
-            
-            // 立即顯示倒數文字
-            btn.textContent = `${t.btnWait} ${count}s`;
-            
-            const timer = setInterval(() => {
-                count--;
-                if (count > 0) {
-                    btn.textContent = `${t.btnWait} ${count}s`;
-                } else {
-                    // 倒數結束，開始截圖
-                    clearInterval(timer);
-                    btn.textContent = t.btnProcessing;
-                    executeScreenshot();
-                }
-            }, 1000);
+			updateShareUrl(month, day);
         }
 
-        function executeScreenshot() {
-            const dashboard = document.getElementById('dashboard');
-            const btn = document.getElementById('btn-download');
-            const t = i18n[currentLang];
-            const m = document.getElementById('monthSelect').value;
-            const d = document.getElementById('daySelect').value;
-            const fileName = `BirthdayPokemon_${m}-${d}.png`;
+  		// 1. 更新網址列參數的函式
+        // 請將這個函式放在你「算出寶可夢結果並顯示在畫面上」的程式碼最後面呼叫
+        // 例如：updateShareUrl(選中的月份, 選中的日期);
+        function updateShareUrl(month, day) {
+            // 檢查是否有選擇月份和日期
+            if (month && day) {
+                // 改變網址列，加上 ?m=月份&d=日期，但不會重新載入網頁
+                const newUrl = `${window.location.pathname}?m=${month}&d=${day}`;
+                window.history.replaceState(null, '', newUrl);
+            }
+        }
+
+        // 2. 綁定「複製連結」按鈕的功能
+        document.getElementById('btn-copy-url').addEventListener('click', function() {
+            // 抓取當前帶有參數的完整網址
+            const currentUrl = window.location.href;
             
-            const pixelRatio = window.devicePixelRatio || 1;
-            const ua = navigator.userAgent || navigator.vendor || window.opera;
-            
-            // 偵測是否為 LINE、FB 等 App 內建瀏覽器
-            const isInAppBrowser = (ua.indexOf("Line") > -1) || (ua.indexOf("FBAN") > -1) || (ua.indexOf("FBAV") > -1) || (ua.indexOf("Instagram") > -1);
-            
-            // 偵測是否為行動裝置 (手機/平板)
-            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(ua);
-			
-            html2canvas(dashboard, {
-                useCORS: true,
-                scale: Math.max(pixelRatio * 1.5, 3),
-                backgroundColor: "#f4f7f6",
-				fontAwesomeEnabled: true
-            }).then(canvas => {
+            // 使用瀏覽器內建的剪貼簿 API 複製網址
+            navigator.clipboard.writeText(currentUrl).then(() => {
+                const originalText = this.textContent;
+                this.textContent = "✅ 連結已複製！快去貼給朋友吧";
+                this.style.backgroundColor = "#27ae60"; // 變成綠色給予視覺回饋
                 
-                // 【手機端】遇到 LINE / FB 環境，維持彈窗避開限制
-                if (isInAppBrowser) {
-                    const base64Image = canvas.toDataURL("image/png");
-                    document.getElementById('preview-image').src = base64Image;
-                    document.getElementById('preview-modal').classList.add('active');
-                    
-                    btn.disabled = false;
-                    btn.textContent = t.btnDownload;
-                    return; 
-                }
-
-                canvas.toBlob(function(blob) {
-                    const file = new File([blob], fileName, { type: 'image/png' });
-
-                    // 【手機端】如果是正常手機瀏覽器，才嘗試原生分享選單
-                    if (isMobile && navigator.canShare && navigator.canShare({ files: [file] })) {
-                        navigator.share({
-                            files: [file],
-                            title: '我的專屬生日寶可夢',
-                            text: '快來測測你的專屬生日寶可夢！ 👇\nhttps://ludology7882.github.io/birthday-pokemon/'
-                        }).then(() => {
-                            btn.disabled = false;
-                            btn.textContent = t.btnDownload;
-                        }).catch(() => {
-                            triggerTraditionalDownload(blob, fileName);
-                            btn.disabled = false;
-                            btn.textContent = t.btnDownload;
-                        });
-                    } else {
-                        // 【電腦端】一律直通傳統下載，乾淨俐落！
-                        triggerTraditionalDownload(blob, fileName);
-                        btn.disabled = false;
-                        btn.textContent = t.btnDownload;
-                    }
-                }, 'image/png');
-
+                // 2秒後恢復原狀
+                setTimeout(() => {
+                    this.textContent = "🔗 複製我的專屬連結";
+                    this.style.backgroundColor = "#3498db";
+                }, 2000);
             }).catch(err => {
-                // 【錯誤處理】即使發生意外，也要把按鈕救回來
-                console.error("截圖發生錯誤:", err);
-                alert("截圖發生意外錯誤，請稍後再試！");
-                btn.disabled = false;
-                btn.textContent = t.btnDownload;
+                alert("複製失敗，請手動複製上方網址列！");
             });
-        }
-
-        // 獨立的傳統下載函式
-        function triggerTraditionalDownload(blob, fileName) {
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.download = fileName;
-            link.href = url;
-            link.click();
-            URL.revokeObjectURL(url); // 釋放記憶體
-        }
+        });
     </script>
-	<div id="preview-modal" class="modal-overlay">
-        <div class="modal-text">
-            👇 請嘗試「長按圖片」儲存 👇<br>
-            <span style="font-size: 14px; color: #ffeb3b; font-weight: normal;">
-                (若無反應，請點擊螢幕右上角選單 ⠇ ➔「以瀏覽器開啟」即可順利下載)
-            </span>
-        </div>
-        <img id="preview-image" class="modal-content" src="" alt="預覽圖">
-        <button class="modal-close" onclick="document.getElementById('preview-modal').classList.remove('active')">關閉</button>
-    </div>
-
+	
 </body>
 
 </html>
+
 
 
 
