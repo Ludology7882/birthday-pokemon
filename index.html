@@ -768,34 +768,38 @@
             const d = document.getElementById('daySelect').value;
             const fileName = `BirthdayPokemon_${m}-${d}.png`;
             
-            // 偵測是否為 LINE、FB、IG 的內建瀏覽器
+            const pixelRatio = window.devicePixelRatio || 1;
             const ua = navigator.userAgent || navigator.vendor || window.opera;
+            
+            // 偵測是否為 LINE、FB 等 App 內建瀏覽器
             const isInAppBrowser = (ua.indexOf("Line") > -1) || (ua.indexOf("FBAN") > -1) || (ua.indexOf("FBAV") > -1) || (ua.indexOf("Instagram") > -1);
-
+            
+            // 偵測是否為行動裝置 (手機/平板)
+            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(ua);
+			
             html2canvas(dashboard, {
                 useCORS: true,
-                scale: 2,
-                backgroundColor: "#f4f7f6"
+                scale: Math.max(pixelRatio * 1.5, 3),
+                backgroundColor: "#f4f7f6",
+				fontAwesomeEnabled: true
             }).then(canvas => {
                 
-                // 【分支 A】如果是 LINE / FB 環境：彈出圖片請使用者長按
+                // 【手機端】遇到 LINE / FB 環境，維持彈窗避開限制
                 if (isInAppBrowser) {
                     const base64Image = canvas.toDataURL("image/png");
                     document.getElementById('preview-image').src = base64Image;
                     document.getElementById('preview-modal').classList.add('active');
                     
-                    // 務必恢復按鈕狀態
                     btn.disabled = false;
                     btn.textContent = t.btnDownload;
                     return; 
                 }
 
-                // 【分支 B】正常瀏覽器環境：嘗試原生分享或直接下載
                 canvas.toBlob(function(blob) {
                     const file = new File([blob], fileName, { type: 'image/png' });
 
-                    if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                        // 支援原生分享 (如 Safari / Chrome 手機版)
+                    // 【手機端】如果是正常手機瀏覽器，才嘗試原生分享選單
+                    if (isMobile && navigator.canShare && navigator.canShare({ files: [file] })) {
                         navigator.share({
                             files: [file],
                             title: '我的專屬生日寶可夢',
@@ -803,14 +807,13 @@
                         }).then(() => {
                             btn.disabled = false;
                             btn.textContent = t.btnDownload;
-                        }).catch((error) => {
-                            // 使用者取消分享，改為觸發下載
+                        }).catch(() => {
                             triggerTraditionalDownload(blob, fileName);
                             btn.disabled = false;
                             btn.textContent = t.btnDownload;
                         });
                     } else {
-                        // 不支援分享 (如電腦版)，直接觸發下載
+                        // 【電腦端】一律直通傳統下載，乾淨俐落！
                         triggerTraditionalDownload(blob, fileName);
                         btn.disabled = false;
                         btn.textContent = t.btnDownload;
@@ -850,6 +853,7 @@
 </body>
 
 </html>
+
 
 
 
