@@ -179,6 +179,7 @@
             gap: 20px;
             justify-content: center;
             flex-wrap: wrap;
+			align-items: stretch;
         }
         .pokemon-card {
             display: flex;
@@ -188,9 +189,11 @@
             border: 1px solid #eee;
             border-radius: 12px;
             padding: 15px;
-            width: 160px;
+			width: 100%; 
+            max-width: 220px;
             text-align: center;
             transition: transform 0.2s;
+			box-sizing: border-box;
         }
         .pokemon-card:hover {
             transform: translateY(-5px);
@@ -201,6 +204,23 @@
             height: 120px;
             object-fit: contain;
             margin-bottom: 5px;
+        }
+		.pokemon-flavor-text {
+            font-size: 12px;
+            color: #555;
+            margin-top: 10px;
+            padding: 8px;
+            background-color: #f8f9fa;
+            border-radius: 6px;
+            font-style: italic;
+            line-height: 1.4;
+            width: 100%;
+            box-sizing: border-box;
+            text-align: left;
+            border-left: 3px solid #ccc;
+			word-wrap: break-word;
+            overflow-wrap: break-word;
+			flex-grow: 1;
         }
         /* 主語言與副語言動態樣式 */
         .pokemon-name {
@@ -224,6 +244,17 @@
             border-top: 1px dashed #ddd;
             width: 100%;
         }
+		/* 針對小螢幕手機的微調 */
+        @media (max-width: 500px) {
+            .pokemon-card {
+                /* 手機上如果螢幕太窄，讓卡片稍微變小，確保能舒適閱讀 */
+                max-width: 100%; 
+                padding: 12px;
+            }
+            .pokemon-flavor-text {
+                font-size: 12px; /* 手機上的說明文字稍微縮小一點點 */
+            }
+		}
 		/* 截圖下載按鈕與動作區塊樣式 */
         .action-area {
             width: 100%;
@@ -524,7 +555,10 @@
                             pokemonDatabase[id] = {
                                 zh: cols[1] ? cols[1].trim() : "---",
                                 ja: cols[2] ? cols[2].trim() : "---",
-                                en: cols[3] ? cols[3].trim() : "---"
+                                en: cols[3] ? cols[3].trim() : "---",
+								desc: cols[4] ? cols[4].trim() : "圖鑑資料建置中...",
+								jadesc: cols[5] ? cols[5].trim() : "図鑑データ準備中...",
+								endesc: cols[6] ? cols[6].trim() : "Pokédex entry coming soon...",
                             };
                             loadedCount++;
                         }
@@ -550,7 +584,7 @@
         // ==========================================
         function getPokemonCardHTML(dexNumber, description) {
             const fallbackName = i18n[currentLang].unknown;
-            const pokeData = pokemonDatabase[dexNumber] || { zh: fallbackName, ja: fallbackName, en: fallbackName };
+            const pokeData = pokemonDatabase[dexNumber] || { zh: fallbackName, ja: fallbackName, en: fallbackName, desc: "未知的寶可夢", jadesc: "未知的寶可夢", endesc: "未知的寶可夢" };
             const imgUrl = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${dexNumber}.png`;
 
             // 動態決定誰是主語系，誰是副語系
@@ -559,8 +593,9 @@
                 primaryName = pokeData.en; sub1 = pokeData.ja; sub2 = pokeData.zh;
             } else if (currentLang === 'ja') {
                 primaryName = pokeData.ja; sub1 = pokeData.en; sub2 = pokeData.zh;
-            } else { // 預設中文
+            } else { 
                 primaryName = pokeData.zh; sub1 = pokeData.en; sub2 = pokeData.ja;
+                currentDesc = pokeData.descZh;
             }
 
             return `
@@ -569,11 +604,13 @@
                     <div class="pokemon-name">${primaryName}</div>
                     <div class="pokemon-sub-name">${sub1}</div>
                     <div class="pokemon-sub-name">${sub2}</div>
+                    
+                    <div class="pokemon-flavor-text">${currentDesc}</div>
+                    
                     <div class="dex-number">#${dexNumber}<br>${description}</div>
                 </div>
             `;
         }
-
         // 動態產生對應語言的描述文字
         function getDescM1(m, d) {
             const t = i18n[currentLang];
@@ -692,6 +729,7 @@
 </body>
 
 </html>
+
 
 
 
