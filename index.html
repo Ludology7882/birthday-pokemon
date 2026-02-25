@@ -480,14 +480,13 @@
         const CSV_URL = `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(SHEET_URL)}`;
         let pokemonDatabase = {}; 
 
-        async function loadDatabase() {
+async function loadDatabase() {
             try {
                 const response = await fetch(CSV_URL);
                 const csvText = await response.text();
                 const rows = csvText.split(/\r?\n/).slice(1); 
                 let loadedCount = 0;
                 
-                // 超強大正則表達式：正確切割 CSV，不會被圖鑑文字裡的逗號誤導
                 const csvRegex = /,(?=(?:(?:[^"]*"){2})*[^"]*$)/;
 
                 rows.forEach(row => {
@@ -496,7 +495,6 @@
                     if (cols.length >= 2) {
                         const id = parseInt(cols[0]);
                         if (!isNaN(id)) {
-                            // 確保這裡的變數名稱是 descZh, descJa, descEn
                             pokemonDatabase[id] = {
                                 zh: cols[1] || "---",
                                 ja: cols[2] || "---",
@@ -510,38 +508,46 @@
                     }
                 });
 
+                // 資料庫成功載入完成
                 if (loadedCount > 0) {
                     document.getElementById('loading').style.display = 'none';
+                    
+                    // 👇👇👇 關鍵修復：在這裡「真正執行」自動讀取網址的函式
+                    checkUrlAndAutoRun(); 
                 }
             } catch (error) {
                 console.error("讀取表單失敗：", error);
                 document.getElementById('loading').textContent = "Database Error / 資料庫讀取失敗";
             }
-			// 3. 自動讀取網址參數並執行搜尋的函式
+        }
+
+        // 3. 自動讀取網址參數並執行搜尋的函式 (獨立出來比較乾淨)
         function checkUrlAndAutoRun() {
             const urlParams = new URLSearchParams(window.location.search);
             const m = urlParams.get('m');
             const d = urlParams.get('d');
             
             if (m && d) {
-                // 自動幫使用者把月份和日期的選單填好
                 const monthSelect = document.getElementById('monthSelect');
                 const daySelect = document.getElementById('daySelect');
                 
                 if (monthSelect && daySelect) {
+                    // 先設定月份
                     monthSelect.value = m;
+                    // ⚠️ 關鍵防呆：切換月份後，強制更新該月天數 (避免2月29日選不到的問題)
+                    updateDays(); 
+                    // 再設定日期
                     daySelect.value = d;
                     
-                    // 模擬使用者點擊了「搜尋/計算」按鈕
-                    // ⚠️ 這裡的 'btn-search-date' 請替換成你網頁上實際觸發日期搜尋的那顆按鈕的 ID
                     const searchBtn = document.getElementById('ui-btn-search');
                     if (searchBtn) {
+                        // 模擬點擊
                         searchBtn.click();
                         
-                        // 在畫面最上方加入一個小提示，增加互動感
+                        // 加上提示字條
                         const hint = document.createElement('div');
                         hint.innerHTML = `<div style="background:#fff3cd; color:#856404; padding:10px; text-align:center; margin-bottom:15px; border-radius:8px; font-weight:bold;">
-                            👀 這是他的專屬生日寶可夢！你的專屬寶可夢是哪一隻呢？快來測測看！👇
+                            👀 這是朋友的專屬生日寶可夢！你的專屬寶可夢是哪一隻呢？快來測測看！👇
                         </div>`;
                         document.getElementById('dashboard').prepend(hint);
                     }
@@ -693,6 +699,7 @@
 </body>
 
 </html>
+
 
 
 
