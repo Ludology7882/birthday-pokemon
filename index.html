@@ -821,15 +821,21 @@
             });
         }
     </script>
-<div class="modal-text">
+	<div id="preview-modal" class="modal-overlay">
+        <div class="modal-text">
             👇 請嘗試「長按圖片」儲存 👇<br>
             <span style="font-size: 14px; color: #ffeb3b; font-weight: normal;">
                 (若無反應，請點擊螢幕右上角選單 ⠇ ➔「以瀏覽器開啟」即可順利下載)
             </span>
         </div>
+        <img id="preview-image" class="modal-content" src="" alt="預覽圖">
+        <button class="modal-close" onclick="document.getElementById('preview-modal').classList.remove('active')">關閉</button>
+    </div>
+
 </body>
 
 </html>
+
 
 
 
