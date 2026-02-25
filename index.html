@@ -333,6 +333,11 @@
             border-radius: 12px;
             box-shadow: 0 4px 15px rgba(255,255,255,0.2);
             object-fit: contain;
+			/* 👇 加上這四行，強制喚醒手機的長按選單 👇 */
+            -webkit-touch-callout: default !important;
+            pointer-events: auto !important;
+            user-select: auto !important;
+            -webkit-user-select: auto !important;
         }
         /* 提示文字與關閉按鈕 */
         .modal-text {
@@ -816,14 +821,16 @@
             });
         }
     </script>
-<div id="preview-modal" class="modal-overlay">
-        <div class="modal-text">👇 由於 LINE 限制，請「長按圖片」來儲存或分享 👇</div>
-        <img id="preview-image" class="modal-content" src="" alt="預覽圖">
-        <button class="modal-close" onclick="document.getElementById('preview-modal').classList.remove('active')">關閉</button>
-    </div>
+<div class="modal-text">
+            👇 請嘗試「長按圖片」儲存 👇<br>
+            <span style="font-size: 14px; color: #ffeb3b; font-weight: normal;">
+                (若無反應，請點擊螢幕右上角選單 ⠇ ➔「以瀏覽器開啟」即可順利下載)
+            </span>
+        </div>
 </body>
 
 </html>
+
 
 
 
